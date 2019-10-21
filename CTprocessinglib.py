@@ -123,7 +123,7 @@ def create_square_mask(h, w, center=None, radius=None):
     return mask
 
 
-def creat_mask_matrix(nr, nc, nz, circle_centers, r, t):
+def create_mask_matrix(nr, nc, nz, circle_centers, r, t):
     mask_mat = np.full((nr,nc,nz),False,dtype=bool)
     
     for i in range(nz):
