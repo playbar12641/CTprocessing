@@ -219,7 +219,7 @@ def crop_scan(scan,circular_mask,square_mask):
 #     return np.array(t_minute), np.array(delP)
 
 def read_pressure_dat_file(fn,t_col,p_col,l_start,dn,mutip):
-
+#t_inv,p_inv=read_pressure_dat_file(fn,t_col=1,p_col=3,l_start=4,dn=1,mutip=1)
     with open(fn) as f:
         reader = csv.reader(f, delimiter="\t")
         for row in reader:
