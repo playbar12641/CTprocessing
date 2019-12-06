@@ -12,6 +12,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from scipy import ndimage
+import csv
+from datetime import datetime
 
 def read_pile(path,file_name,filter=None):
 
@@ -173,3 +175,114 @@ def crop_scan(scan,circular_mask,square_mask):
         croped[:,:,i] = np.reshape(temp[sqm],((rs,rs)))
     
     return croped
+
+# some old codes are commented here
+# this also plot pressure dat file
+# import tkinter as tk
+# from tkinter import filedialog
+# import csv
+# from datetime import datetime
+# import matplotlib.pyplot as plt
+
+# def read_dat_file(t_col,p_col,l_start,dn,mutip):
+#     root = tk.Tk()
+#     root.withdraw()
+#     file_path = filedialog.askopenfilename()
+#     with open(file_path) as f:
+#         reader = csv.reader(f, delimiter="\t")
+#         for row in reader:
+#              columns = list(zip(*reader))
+     
+
+#     line_start=l_start
+#     time=columns[t_col][line_start:-1]
+#     delP=columns[p_col][line_start:-1]
+#     temp=np.array(delP)
+#     delP=np.asfarray(temp,float)
+
+#     n=len(time)
+
+#     time=time[0:n:dn]
+#     delP=delP[0:n:dn]
+    
+#     delP = [x * mutip for x in delP]
+#     t_minute=[0]*len(time)
+    
+    
+#     fmt = '%m/%d/%Y %H:%M:%S.%f'
+#     d1 = datetime.strptime(time[0], fmt)
+
+#     for i in range(len(time)):
+#         d2 = datetime.strptime(time[i], fmt)
+#         t_minute[i]=(d2-d1).seconds/60+(d2-d1).days*24*60
+
+#     return np.array(t_minute), np.array(delP)
+
+def read_pressure_dat_file(fn,t_col,p_col,l_start,dn,mutip):
+
+    with open(fn) as f:
+        reader = csv.reader(f, delimiter="\t")
+        for row in reader:
+             columns = list(zip(*reader))
+     
+    line_start=l_start
+    time=columns[t_col][line_start:-1]
+    delP=columns[p_col][line_start:-1]
+    temp=np.array(delP)
+    delP=np.asfarray(temp,float)
+
+    n=len(time)
+
+    time=time[0:n:dn]
+    delP=delP[0:n:dn]
+    
+    delP = [x * mutip for x in delP]
+    t_minute=[0]*len(time)
+    
+    
+    fmt = '%m/%d/%Y %H:%M:%S.%f'
+    d1 = datetime.strptime(time[0], fmt)
+
+    for i in range(len(time)):
+        d2 = datetime.strptime(time[i], fmt)
+        t_minute[i]=(d2-d1).seconds/60+(d2-d1).days*24*60
+   
+    return np.array(t_minute), np.array(delP)
+
+
+def make_profile_plot(y,df,fig_prop):
+    lxc=['b','g','r','c','m','k']
+    lxls=['-','--','-.',':']
+    lxmarker=['.','s','x','^','d','P']
+    
+    fig=plt.figure()
+    ax=fig.add_subplot(111)
+      
+    for n in np.arange(len(df.columns)):
+        n_color=np.remainder(n,len(lxc)).astype(int)
+        n_ls=np.remainder(n,len(lxls)).astype(int)
+        n_marker=np.remainder(n,len(lxmarker)).astype(int)
+        ax.plot(y,df.iloc[:,n],c=lxc[n_color],ls=lxls[n_ls],marker=lxmarker[n_marker],label=df.columns[n],markersize=fig_prop.markersize)
+    
+    
+    
+    ax.set_ylim(fig_prop.ylim)
+    ax.set_xlim(fig_prop.xlim)
+
+    ax.set_xlabel(fig_prop.xlabel)
+    ax.set_ylabel(fig_prop.ylabel)
+    
+    plt.legend(loc=fig_prop.legend_loc)
+    plt.title(fig_prop.title)
+    plt.subplots_adjust(left=0.0, bottom=0.0, right=0.8, top=1, wspace=0.2, hspace=0.2)
+
+#     plt.draw()
+#     plt.show()
+
+    
+    
+    
+    
+    
+    
+    
